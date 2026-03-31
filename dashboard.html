@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工作坊報名數據儀表板</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js 視覺化圖表套件 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap');
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f3f4f6; /* gray-100 */
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        /* 隱藏原生捲軸 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+</head>
+<body class="min-h-screen text-gray-800 antialiased p-4 sm:p-6 lg:p-8">
+
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <!-- 頂部導覽與標題 -->
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-2xl shadow-sm">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800 flex items-center">
+                    <i data-lucide="bar-chart-2" class="mr-3 text-indigo-500"></i>
+                    工作坊報名數據儀表板
+                </h1>
+                <p class="text-sm text-gray-500 mt-1">運用AI快速打造高效能表單工作坊 • 即時數據分析</p>
+            </div>
+            <div class="mt-4 sm:mt-0 flex items-center space-x-4">
+                <span id="lastUpdateTime" class="text-sm text-gray-500 hidden sm:inline-block">最後更新: 尚未載入</span>
+                <button onclick="fetchData()" id="refreshBtn" class="flex items-center px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition font-medium">
+                    <i data-lucide="refresh-cw" class="w-4 h-4 mr-2" id="refreshIcon"></i>
+                    重新整理
+                </button>
+            </div>
+        </header>
+
+        <!-- 載入中狀態 (Loading) -->
+        <div id="loadingState" class="flex flex-col items-center justify-center py-20">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
+            <p class="text-gray-500 font-medium animate-pulse">正在從 Google Sheets 讀取最新資料...</p>
+        </div>
+
+        <!-- 儀表板主要內容 (預設隱藏，載入後顯示) -->
+        <div id="dashboardContent" class="hidden space-y-6">
+            
+            <!-- 頂部數據卡片 (KPI) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- 總報名人數 -->
+                <div class="glass-card rounded-2xl p-6 flex items-center">
+                    <div class="p-4 bg-blue-100 text-blue-600 rounded-full mr-4">
+                        <i data-lucide="users" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">總報名人數</p>
+                        <p class="text-3xl font-bold text-gray-800" id="kpi-total">0</p>
+                    </div>
+                </div>
+                
+                <!-- 需要茶水點心 -->
+                <div class="glass-card rounded-2xl p-6 flex items-center">
+                    <div class="p-4 bg-orange-100 text-orange-600 rounded-full mr-4">
+                        <i data-lucide="coffee" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">需備茶水點心份數</p>
+                        <p class="text-3xl font-bold text-gray-800" id="kpi-snacks">0</p>
+                    </div>
+                </div>
+
+                <!-- 單位覆蓋數 -->
+                <div class="glass-card rounded-2xl p-6 flex items-center">
+                    <div class="p-4 bg-green-100 text-green-600 rounded-full mr-4">
+                        <i data-lucide="building-2" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">參與單位數</p>
+                        <p class="text-3xl font-bold text-gray-800" id="kpi-depts">0</p>
+                    </div>
+                </div>
+
+                <!-- 平均信心指數 -->
+                <div class="glass-card rounded-2xl p-6 flex items-center">
+                    <div class="p-4 bg-pink-100 text-pink-600 rounded-full mr-4">
+                        <i data-lucide="target" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">平均信心指數 (1-5)</p>
+                        <p class="text-3xl font-bold text-gray-800" id="kpi-confidence">0.0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 圖表區塊 (第一列) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- 職稱分佈 (圓餅圖) -->
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                        <i data-lucide="briefcase" class="w-5 h-5 mr-2 text-gray-500"></i> 學員職稱分佈
+                    </h3>
+                    <div class="relative h-64 w-full flex justify-center">
+                        <canvas id="jobChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- AI 使用頻率 (長條圖) -->
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                        <i data-lucide="activity" class="w-5 h-5 mr-2 text-gray-500"></i> AI 使用頻率
+                    </h3>
+                    <div class="relative h-64 w-full">
+                        <canvas id="freqChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 圖表區塊 (第二列) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- 需求痛點統計 (橫向長條圖) -->
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                        <i data-lucide="alert-circle" class="w-5 h-5 mr-2 text-gray-500"></i> 最想解決的行政痛點 (Top 5)
+                    </h3>
+                    <div class="relative h-64 w-full">
+                        <canvas id="painPointChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 常用工具經驗 (雷達圖 or 甜甜圈) -->
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                        <i data-lucide="wrench" class="w-5 h-5 mr-2 text-gray-500"></i> 學員使用過的 AI 工具
+                    </h3>
+                    <div class="relative h-64 w-full flex justify-center">
+                        <canvas id="toolChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 最新報名名單 (表格) -->
+            <div class="glass-card rounded-2xl p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                        <i data-lucide="list" class="w-5 h-5 mr-2 text-gray-500"></i> 最新報名名單
+                    </h3>
+                    <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">僅顯示最新 10 筆</span>
+                </div>
+                <div class="overflow-x-auto no-scrollbar rounded-xl border border-gray-100">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">填表時間</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">姓名</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">單位</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">職稱</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">會前補充留言</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody" class="bg-white divide-y divide-gray-200 text-sm">
+                            <!-- JS 動態填入 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // 初始化 Icons
+        lucide.createIcons();
+
+        // 🔥 這裡填入你的 Apps Script 網址 (與報名表相同)
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyD5_UqP2HyKix7It07e6_WE1uX3P0IgoyCjfzCdX2D4mGt1K64ZZ0aIIvOwincKuk/exec';
+
+        // 儲存圖表實例以便更新時銷毀重建
+        let charts = {};
+
+        // 設定 Chart.js 全域字體
+        Chart.defaults.font.family = "'Noto Sans TC', sans-serif";
+
+        // 初次載入
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchData();
+        });
+
+        // 抓取並解析資料
+        function fetchData() {
+            const loadingState = document.getElementById('loadingState');
+            const dashboardContent = document.getElementById('dashboardContent');
+            const refreshIcon = document.getElementById('refreshIcon');
+            
+            // 顯示載入中動畫
+            refreshIcon.classList.add('animate-spin');
+            if (dashboardContent.classList.contains('hidden')) {
+                loadingState.classList.remove('hidden');
+            }
+
+            // 發送 GET 請求給 Apps Script
+            fetch(scriptURL)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        processDashboardData(data.data);
+                        
+                        // 更新時間
+                        const now = new Date();
+                        document.getElementById('lastUpdateTime').innerText = `最後更新: ${now.toLocaleTimeString()}`;
+                        
+                        // 切換顯示狀態
+                        loadingState.classList.add('hidden');
+                        dashboardContent.classList.remove('hidden');
+                    } else {
+                        console.error('API 錯誤:', data.message || data.error);
+                        alert('載入資料失敗，請確認 Apps Script 是否已重新部署。');
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch Error:', error);
+                    alert('無法連線至資料庫，請檢查網路狀態。');
+                })
+                .finally(() => {
+                    refreshIcon.classList.remove('animate-spin');
+                });
+        }
+
+        // 處理與計算儀表板資料
+        function processDashboardData(rawData) {
+            // 如果沒資料
+            if (!rawData || rawData.length === 0) return;
+
+            // 1. 計算頂部 KPI
+            let total = rawData.length;
+            let snacksCount = 0;
+            let depts = new Set();
+            let totalConfidence = 0;
+            let validConfidenceCount = 0;
+
+            // 用於統計的容器
+            let jobCounts = {};
+            let freqCounts = { '重度':0, '中度':0, '輕度':0, '新手':0 };
+            let painPointsCounts = {};
+            let toolCounts = {};
+
+            rawData.forEach(row => {
+                // 茶水計算 (依據您 Google Sheet 實際表頭名稱，我們這裡盡量相容各種可能的命名)
+                const snackVal = row['需要茶水點心'] || row['茶水點心'] || row['是否需要茶水點心？'];
+                if (snackVal && snackVal.includes('是')) snacksCount++;
+
+                // 單位不重複計算
+                if (row['單位']) depts.add(row['單位'].trim());
+
+                // 信心指數計算
+                const conf = parseInt(row['信心指數']);
+                if (!isNaN(conf)) {
+                    totalConfidence += conf;
+                    validConfidenceCount++;
+                }
+
+                // 職稱統計 (將 "其他：XXX" 歸類為 "其他")
+                let job = row['職稱'] || '未填寫';
+                if (job.startsWith('其他')) job = '其他';
+                jobCounts[job] = (jobCounts[job] || 0) + 1;
+
+                // AI 使用頻率統計
+                let freq = row['AI 使用頻率'] || '未填寫';
+                if (freqCounts[freq] !== undefined) freqCounts[freq]++;
+                else if (freq.includes('重度')) freqCounts['重度']++;
+                else if (freq.includes('中度')) freqCounts['中度']++;
+                else if (freq.includes('輕度')) freqCounts['輕度']++;
+                else if (freq.includes('新手')) freqCounts['新手']++;
+
+                // 需求痛點統計 (分隔符號可能是 '、' 或 ',')
+                let painStr = row['需求痛點'] || '';
+                let points = painStr.split(/[,、]/).map(s => s.trim()).filter(s => s);
+                points.forEach(p => {
+                    painPointsCounts[p] = (painPointsCounts[p] || 0) + 1;
+                });
+
+                // 工具經驗統計
+                let toolStr = row['工具經驗'] || row['曾嘗試過哪些生成式 AI 工具？'] || '';
+                let tools = toolStr.split(/[,、]/).map(s => s.trim()).filter(s => s);
+                tools.forEach(t => {
+                    // 簡化名稱
+                    if (t.includes('Midjourney')) t = '繪圖類(Midjourney等)';
+                    if (t.includes('寫作輔助')) t = '寫作輔助(Notion AI等)';
+                    toolCounts[t] = (toolCounts[t] || 0) + 1;
+                });
+            });
+
+            // 更新 KPI DOM
+            document.getElementById('kpi-total').innerText = total;
+            document.getElementById('kpi-snacks').innerText = snacksCount;
+            document.getElementById('kpi-depts').innerText = depts.size;
+            document.getElementById('kpi-confidence').innerText = validConfidenceCount > 0 ? (totalConfidence / validConfidenceCount).toFixed(1) : '0';
+
+            // 2. 繪製圖表
+            renderJobChart(jobCounts);
+            renderFreqChart(freqCounts);
+            renderPainPointChart(painPointsCounts);
+            renderToolChart(toolCounts);
+
+            // 3. 更新最新報名表格 (取最後10筆，反轉順序讓最新的在最上面)
+            renderTable(rawData.slice(-10).reverse());
+        }
+
+        // --- 繪圖工具函式 ---
+
+        // 銷毀舊圖表 (避免重整時圖表重疊發瘋)
+        function destroyChart(chartId) {
+            if (charts[chartId]) {
+                charts[chartId].destroy();
+            }
+        }
+
+        // 圓餅圖：職稱
+        function renderJobChart(data) {
+            destroyChart('jobChart');
+            const ctx = document.getElementById('jobChart').getContext('2d');
+            charts['jobChart'] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(data),
+                    datasets: [{
+                        data: Object.values(data),
+                        backgroundColor: ['#8b5cf6', '#ec4899', '#3b82f6', '#10b981', '#f59e0b', '#6b7280'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right' } }
+                }
+            });
+        }
+
+        // 長條圖：AI 使用頻率
+        function renderFreqChart(data) {
+            destroyChart('freqChart');
+            const ctx = document.getElementById('freqChart').getContext('2d');
+            charts['freqChart'] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(data),
+                    datasets: [{
+                        label: '人數',
+                        data: Object.values(data),
+                        backgroundColor: '#6366f1',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // 橫向長條圖：痛點
+        function renderPainPointChart(data) {
+            destroyChart('painPointChart');
+            
+            // 排序並取前 5 名
+            const sorted = Object.entries(data).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            
+            const ctx = document.getElementById('painPointChart').getContext('2d');
+            charts['painPointChart'] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sorted.map(item => item[0]),
+                    datasets: [{
+                        label: '票數',
+                        data: sorted.map(item => item[1]),
+                        backgroundColor: '#ec4899',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // 變成橫向
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // 圓餅圖：工具
+        function renderToolChart(data) {
+            destroyChart('toolChart');
+            
+            // 如果沒人用過，過濾掉 "完全沒用過" 或數值為 0 的以求畫面乾淨
+            delete data['完全沒用過'];
+
+            const ctx = document.getElementById('toolChart').getContext('2d');
+            charts['toolChart'] = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(data),
+                    datasets: [{
+                        data: Object.values(data),
+                        backgroundColor: ['#14b8a6', '#f43f5e', '#8b5cf6', '#eab308', '#3b82f6'],
+                        borderWidth: 1,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        // 渲染表格
+        function renderTable(rows) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = ''; // 清空
+
+            if (rows.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">目前尚無報名資料</td></tr>';
+                return;
+            }
+
+            rows.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition";
+                
+                // 處理時間格式化
+                let timeStr = row['填表時間'] || '';
+                if(timeStr && new Date(timeStr) !== "Invalid Date") {
+                    const d = new Date(timeStr);
+                    timeStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+                }
+
+                // 處理補充留言 (過長會截斷)
+                let note = row['會前補充'] || '-';
+                if (note.length > 20) note = note.substring(0, 20) + '...';
+
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-500">${timeStr}</td>
+                    <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">${row['姓名'] || '匿名'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-700">${row['單位'] || '-'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                            ${row['職稱'] || '-'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-gray-500 truncate max-w-[200px]" title="${row['會前補充']}">${note}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
