@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>運用AI快速打造高效能表單工作坊 - 報名表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            /* 活力漸層背景 */
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 自訂選取框與單選框顏色 */
+        .custom-radio:checked {
+            background-color: #ec4899; /* pink-500 */
+            border-color: #ec4899;
+        }
+        .custom-checkbox:checked {
+            background-color: #8b5cf6; /* violet-500 */
+            border-color: #8b5cf6;
+        }
+
+        /* 隱藏原生捲軸但保留功能 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 4px;
+        }
+        
+        /* 浮動輸入框效果 */
+        .input-transition {
+            transition: all 0.3s ease;
+        }
+        .input-transition:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen py-10 px-4 sm:px-6 lg:px-8 text-gray-800 antialiased relative">
+
+    <!-- 主要內容卡片 -->
+    <main class="max-w-4xl mx-auto bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/50">
+        
+        <!-- 頂部裝飾條 -->
+        <div class="h-4 w-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500"></div>
+
+        <div class="p-8 sm:p-12">
+            <!-- 標題區 -->
+            <header class="text-center mb-10 border-b border-gray-200 pb-8">
+                <div class="inline-block bg-pink-100 text-pink-600 px-4 py-1 rounded-full text-sm font-bold tracking-wider mb-4 shadow-sm">
+                    教育訓練報名表
+                </div>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500 mb-4 leading-tight">
+                    運用AI快速打造高效能表單工作坊
+                </h1>
+                <p class="text-gray-600 font-medium">以數據驅動決策，提升團隊效率與應變能力</p>
+            </header>
+
+            <!-- 區塊一：活動資訊 -->
+            <section class="mb-12 bg-indigo-50/50 rounded-2xl p-6 border border-indigo-100 transition hover:shadow-md">
+                <h2 class="text-xl font-bold text-indigo-800 mb-5 flex items-center">
+                    <i data-lucide="info" class="mr-2 text-indigo-500"></i> 一、 活動資訊
+                </h2>
+                <p class="text-gray-700 leading-relaxed mb-6">
+                    <strong>目的：</strong> 本工作坊旨在介紹生成式 AI (如 Gemini) 的核心原理，並深入探討如何將其應用於教學部的日常行政、專案管理與文書處理中。
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div class="flex items-start">
+                        <div class="bg-indigo-100 p-3 rounded-full mr-4 text-indigo-600">
+                            <i data-lucide="calendar"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">日期</p>
+                            <p class="font-bold text-gray-800">2026/03/31 (二)</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="bg-pink-100 p-3 rounded-full mr-4 text-pink-600">
+                            <i data-lucide="clock"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">時間</p>
+                            <p class="font-bold text-gray-800">14:00 - 15:00</p>
+                            <p class="text-xs text-gray-500">(共 1 小時)</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="bg-purple-100 p-3 rounded-full mr-4 text-purple-600">
+                            <i data-lucide="map-pin"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">地點</p>
+                            <p class="font-bold text-gray-800">大愛樓 3F 電腦教室</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 區塊二：活動議程 -->
+            <section class="mb-12">
+                <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center border-l-4 border-pink-500 pl-3">
+                    二、 活動議程
+                </h2>
+                <div class="relative border-l-2 border-pink-200 ml-4 space-y-6">
+                    <div class="relative pl-6">
+                        <div class="absolute w-4 h-4 bg-pink-500 rounded-full -left-[9px] top-1 border-4 border-white"></div>
+                        <span class="text-sm font-bold text-pink-500">14:00 - 14:15</span>
+                        <h3 class="font-bold text-gray-800">報到與暖身 (Check-in)</h3>
+                        <p class="text-sm text-gray-600 mt-1">連接設備，進行數位工具破冰。</p>
+                    </div>
+                    <div class="relative pl-6">
+                        <div class="absolute w-4 h-4 bg-purple-500 rounded-full -left-[9px] top-1 border-4 border-white"></div>
+                        <span class="text-sm font-bold text-purple-500">14:15 - 14:30</span>
+                        <h3 class="font-bold text-gray-800">Session 1: 與 AI 共舞的藝術</h3>
+                        <p class="text-sm text-gray-600 mt-1">從指令工程 (Prompt Engineering) 入門。</p>
+                    </div>
+                    <div class="relative pl-6">
+                        <div class="absolute w-4 h-4 bg-gray-300 rounded-full -left-[9px] top-1 border-4 border-white"></div>
+                        <span class="text-sm font-bold text-gray-500">14:30 - 14:35</span>
+                        <h3 class="font-bold text-gray-600">中場休息 (Break)</h3>
+                    </div>
+                    <div class="relative pl-6">
+                        <div class="absolute w-4 h-4 bg-indigo-500 rounded-full -left-[9px] top-1 border-4 border-white"></div>
+                        <span class="text-sm font-bold text-indigo-500">14:35 - 14:50</span>
+                        <h3 class="font-bold text-gray-800">Session 2: 行政痛點擊破案例</h3>
+                        <p class="text-sm text-gray-600 mt-1">如何利用 AI 快速生成優化問卷數據分析。</p>
+                    </div>
+                    <div class="relative pl-6">
+                        <div class="absolute w-4 h-4 bg-yellow-500 rounded-full -left-[9px] top-1 border-4 border-white"></div>
+                        <span class="text-sm font-bold text-yellow-500">14:50 - 14:55</span>
+                        <h3 class="font-bold text-gray-800">Workshop: AI 實戰演練</h3>
+                        <p class="text-sm text-gray-600 mt-1">請學員拿出目前手邊正在處理的一份問卷，現場利用 AI 工具進行實作。</p>
+                    </div>
+                    <div class="relative pl-6">
+                        <div class="absolute w-4 h-4 bg-green-500 rounded-full -left-[9px] top-1 border-4 border-white"></div>
+                        <span class="text-sm font-bold text-green-500">14:55 - 15:00</span>
+                        <h3 class="font-bold text-gray-800">總結與問答 (Q&A)</h3>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 報名表單開始 -->
+            <form id="registrationForm" onsubmit="handleFormSubmit(event)">
+                
+                <!-- 區塊三：報名基本資料 -->
+                <section class="mb-12">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center border-l-4 border-purple-500 pl-3">
+                        三、 報名基本資料
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
+                        <div class="space-y-2">
+                            <label class="block text-sm font-bold text-gray-700">姓名 <span class="text-red-500">*</span></label>
+                            <input type="text" name="name" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none input-transition bg-white" placeholder="請輸入姓名">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-bold text-gray-700">電子郵件 (Email) <span class="text-red-500">*</span></label>
+                            <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none input-transition bg-white" placeholder="your@email.com">
+                        </div>
+                        <div class="space-y-2 sm:col-span-2">
+                            <label class="block text-sm font-bold text-gray-700">單位 <span class="text-red-500">*</span></label>
+                            <input type="text" name="department" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none input-transition bg-white" placeholder="請輸入您的單位">
+                        </div>
+                        
+                        <!-- 職稱 -->
+                        <div class="space-y-3 sm:col-span-2 mt-2">
+                            <label class="block text-sm font-bold text-gray-700">職稱 <span class="text-red-500">*</span></label>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 border border-gray-200 rounded-xl hover:bg-purple-50 transition">
+                                    <input type="radio" name="job_title" value="醫師" required class="w-5 h-5 text-purple-600 custom-radio focus:ring-purple-500 border-gray-300" onchange="toggleOtherJob(false)">
+                                    <span class="text-gray-700">醫師</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 border border-gray-200 rounded-xl hover:bg-purple-50 transition">
+                                    <input type="radio" name="job_title" value="護理師" class="w-5 h-5 text-purple-600 custom-radio focus:ring-purple-500 border-gray-300" onchange="toggleOtherJob(false)">
+                                    <span class="text-gray-700">護理師</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 border border-gray-200 rounded-xl hover:bg-purple-50 transition">
+                                    <input type="radio" name="job_title" value="醫事人員" class="w-5 h-5 text-purple-600 custom-radio focus:ring-purple-500 border-gray-300" onchange="toggleOtherJob(false)">
+                                    <span class="text-gray-700">醫事人員</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 border border-gray-200 rounded-xl hover:bg-purple-50 transition">
+                                    <input type="radio" name="job_title" value="行政人員" class="w-5 h-5 text-purple-600 custom-radio focus:ring-purple-500 border-gray-300" onchange="toggleOtherJob(false)">
+                                    <span class="text-gray-700">行政人員</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 border border-gray-200 rounded-xl hover:bg-purple-50 transition sm:col-span-2">
+                                    <input type="radio" name="job_title" value="其他" class="w-5 h-5 text-purple-600 custom-radio focus:ring-purple-500 border-gray-300" onchange="toggleOtherJob(true)">
+                                    <span class="text-gray-700 whitespace-nowrap">其他：</span>
+                                    <input type="text" id="job_other_input" disabled class="w-full border-b-2 border-gray-300 bg-transparent px-2 py-1 focus:outline-none focus:border-purple-500 disabled:opacity-50 transition" placeholder="請註明">
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 茶水點心 -->
+                        <div class="space-y-3 sm:col-span-2 mt-2">
+                            <label class="block text-sm font-bold text-gray-700">是否需要茶水點心？ <span class="text-red-500">*</span></label>
+                            <div class="flex space-x-6">
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="snacks" value="是" required class="w-5 h-5 text-pink-500 custom-radio focus:ring-pink-500 border-gray-300">
+                                    <span class="text-gray-700">是，需要</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="radio" name="snacks" value="否" class="w-5 h-5 text-pink-500 custom-radio focus:ring-pink-500 border-gray-300">
+                                    <span class="text-gray-700">否，不用了謝謝</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 區塊四：數位能力與需求調查 -->
+                <section class="mb-12">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center border-l-4 border-indigo-500 pl-3">
+                        四、 數位能力與需求調查
+                    </h2>
+                    
+                    <div class="space-y-8">
+                        <!-- Q6 -->
+                        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition">
+                            <label class="block text-base font-bold text-gray-800 mb-3">
+                                <span class="text-indigo-600 mr-1">6.</span> 【AI 使用頻率】您目前的 AI 工具使用頻率為何？ (單選) <span class="text-red-500">*</span>
+                            </label>
+                            <div class="space-y-3">
+                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-indigo-50 rounded-lg transition">
+                                    <input type="radio" name="ai_freq" value="重度" required class="w-5 h-5 text-indigo-600 custom-radio focus:ring-indigo-500">
+                                    <span class="text-gray-700"><strong>重度使用者</strong> (每天都會使用)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-indigo-50 rounded-lg transition">
+                                    <input type="radio" name="ai_freq" value="中度" class="w-5 h-5 text-indigo-600 custom-radio focus:ring-indigo-500">
+                                    <span class="text-gray-700"><strong>中度使用者</strong> (每週使用 2-3 次)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-indigo-50 rounded-lg transition">
+                                    <input type="radio" name="ai_freq" value="輕度" class="w-5 h-5 text-indigo-600 custom-radio focus:ring-indigo-500">
+                                    <span class="text-gray-700"><strong>輕度使用者</strong> (偶爾想到才用，一個月不到 1 次)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-indigo-50 rounded-lg transition">
+                                    <input type="radio" name="ai_freq" value="新手" class="w-5 h-5 text-indigo-600 custom-radio focus:ring-indigo-500">
+                                    <span class="text-gray-700"><strong>新手</strong> (聽過但完全沒用過)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Q7 -->
+                        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition">
+                            <label class="block text-base font-bold text-gray-800 mb-3">
+                                <span class="text-indigo-600 mr-1">7.</span> 【工具經驗】您曾經嘗試過哪些生成式 AI 工具？ <span class="text-gray-500 font-normal text-sm">(可複選)</span>
+                            </label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-indigo-50 rounded-lg transition">
+                                    <input type="checkbox" name="ai_tools" value="ChatGPT" class="w-5 h-5 rounded text-violet-600 custom-checkbox focus:ring-violet-500">
+                                    <span class="text-gray-700">ChatGPT (OpenAI)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-indigo-50 rounded-lg transition">
+                                    <input type="checkbox" name="ai_tools" value="Gemini" class="w-5 h-5 rounded text-violet-600 custom-checkbox focus:ring-violet-500">
+                                    <span class="text-gray-700">Gemini (Google)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-indigo-50 rounded-lg transition">
+                                    <input type="checkbox" name="ai_tools" value="Copilot" class="w-5 h-5 rounded text-violet-600 custom-checkbox focus:ring-violet-500">
+                                    <span class="text-gray-700">Copilot (Microsoft)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-indigo-50 rounded-lg transition">
+                                    <input type="checkbox" name="ai_tools" value="Midjourney/DALL-E" class="w-5 h-5 rounded text-violet-600 custom-checkbox focus:ring-violet-500">
+                                    <span class="text-gray-700">Midjourney / DALL-E (繪圖類)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-indigo-50 rounded-lg transition">
+                                    <input type="checkbox" name="ai_tools" value="寫作輔助" class="w-5 h-5 rounded text-violet-600 custom-checkbox focus:ring-violet-500">
+                                    <span class="text-gray-700">寫作輔助工具 (如 Notion AI, Grammarly)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-2 hover:bg-indigo-50 rounded-lg transition">
+                                    <input type="checkbox" name="ai_tools" value="完全沒用過" class="w-5 h-5 rounded text-violet-600 custom-checkbox focus:ring-violet-500" onchange="toggleNoneCheckbox(this)">
+                                    <span class="text-gray-700">完全沒用過</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Q8 -->
+                        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition">
+                            <label class="block text-base font-bold text-gray-800 mb-4">
+                                <span class="text-indigo-600 mr-1">8.</span> 【信心指數】您對於「將 AI 應用在工作上」的信心分數？ <span class="text-gray-500 font-normal text-sm">(1-5分)</span> <span class="text-red-500">*</span>
+                            </label>
+                            <div class="flex flex-col sm:flex-row justify-between items-center bg-gray-50 p-6 rounded-xl space-y-4 sm:space-y-0 relative">
+                                <!-- 進度條裝飾 -->
+                                <div class="hidden sm:block absolute top-1/2 left-8 right-8 h-1 bg-gray-200 -z-0 -translate-y-1/2 rounded-full"></div>
+                                
+                                <label class="flex flex-col items-center cursor-pointer z-10 group">
+                                    <input type="radio" name="confidence" value="1" required class="w-6 h-6 text-pink-500 custom-radio mb-2">
+                                    <span class="text-sm font-bold text-gray-700 group-hover:text-pink-500 transition">1分</span>
+                                    <span class="text-xs text-gray-500 mt-1 sm:absolute sm:bottom-0 sm:translate-y-6 text-center w-24">非常沒信心</span>
+                                </label>
+                                <label class="flex flex-col items-center cursor-pointer z-10 group">
+                                    <input type="radio" name="confidence" value="2" class="w-6 h-6 text-pink-500 custom-radio mb-2">
+                                    <span class="text-sm font-bold text-gray-700 group-hover:text-pink-500 transition">2分</span>
+                                </label>
+                                <label class="flex flex-col items-center cursor-pointer z-10 group">
+                                    <input type="radio" name="confidence" value="3" class="w-6 h-6 text-pink-500 custom-radio mb-2">
+                                    <span class="text-sm font-bold text-gray-700 group-hover:text-pink-500 transition">3分</span>
+                                    <span class="text-xs text-gray-500 mt-1 sm:absolute sm:bottom-0 sm:translate-y-6 text-center w-16">普通</span>
+                                </label>
+                                <label class="flex flex-col items-center cursor-pointer z-10 group">
+                                    <input type="radio" name="confidence" value="4" class="w-6 h-6 text-pink-500 custom-radio mb-2">
+                                    <span class="text-sm font-bold text-gray-700 group-hover:text-pink-500 transition">4分</span>
+                                </label>
+                                <label class="flex flex-col items-center cursor-pointer z-10 group">
+                                    <input type="radio" name="confidence" value="5" class="w-6 h-6 text-pink-500 custom-radio mb-2">
+                                    <span class="text-sm font-bold text-gray-700 group-hover:text-pink-500 transition">5分</span>
+                                    <span class="text-xs text-gray-500 mt-1 sm:absolute sm:bottom-0 sm:translate-y-6 text-center w-24">非常有信心</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Q9 -->
+                        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition">
+                            <label class="block text-base font-bold text-gray-800 mb-3">
+                                <span class="text-indigo-600 mr-1">9.</span> 【需求痛點】在行政工作中，您最希望 AI 幫您解決哪一類問題？ 
+                                <span class="text-pink-500 font-bold text-sm bg-pink-50 px-2 py-1 rounded ml-2">(可複選，至多選 2 項)</span>
+                            </label>
+                            <div class="space-y-3 mt-4" id="q9-container">
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 border border-gray-100 hover:bg-indigo-50 rounded-xl transition">
+                                    <input type="checkbox" name="pain_points" value="文案撰寫" class="q9-checkbox w-5 h-5 rounded text-violet-600 custom-checkbox focus:ring-violet-500">
+                                    <span class="text-gray-700"><strong>文案撰寫</strong> (公文、新聞稿、信件潤飾)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 border border-gray-100 hover:bg-indigo-50 rounded-xl transition">
+                                    <input type="checkbox" name="pain_points" value="會議記錄" class="q9-checkbox w-5 h-5 rounded text-violet-600 custom-checkbox focus:ring-violet-500">
+                                    <span class="text-gray-700"><strong>會議記錄</strong> (逐字稿整理、摘要重點)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 border border-gray-100 hover:bg-indigo-50 rounded-xl transition">
+                                    <input type="checkbox" name="pain_points" value="數據處理" class="q9-checkbox w-5 h-5 rounded text-violet-600 custom-checkbox focus:ring-violet-500">
+                                    <span class="text-gray-700"><strong>數據處理</strong> (Excel 公式生成、數據分析解讀)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 border border-gray-100 hover:bg-indigo-50 rounded-xl transition">
+                                    <input type="checkbox" name="pain_points" value="簡報製作" class="q9-checkbox w-5 h-5 rounded text-violet-600 custom-checkbox focus:ring-violet-500">
+                                    <span class="text-gray-700"><strong>簡報製作</strong> (PPT 大綱生成、排版設計)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer p-3 border border-gray-100 hover:bg-indigo-50 rounded-xl transition">
+                                    <input type="checkbox" name="pain_points" value="資訊檢索" class="q9-checkbox w-5 h-5 rounded text-violet-600 custom-checkbox focus:ring-violet-500">
+                                    <span class="text-gray-700"><strong>資訊檢索</strong> (快速找法規、整理文獻)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Q10 -->
+                        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition">
+                            <label class="block text-base font-bold text-gray-800 mb-3">
+                                <span class="text-indigo-600 mr-1">10.</span> 【會前補充】您目前在行政工作上遇到的最大困難，或想對講師說的話：
+                            </label>
+                            <textarea name="notes" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none input-transition bg-gray-50 resize-none" placeholder="歡迎暢所欲言..."></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 送出按鈕 -->
+                <div class="text-center mt-12 mb-8 relative z-10">
+                    <button type="submit" id="submitBtn" class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-full hover:scale-105 hover:shadow-lg hover:shadow-purple-500/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-600 overflow-hidden">
+                        <span class="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-black"></span>
+                        <span class="relative flex items-center gap-2">
+                            <i data-lucide="send" class="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
+                            <span id="submitBtnText">確認送出報名表</span>
+                        </span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- 頁尾資訊 -->
+            <footer class="mt-12 pt-8 border-t border-gray-200 text-sm text-gray-500">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="flex flex-col sm:flex-row sm:space-x-6 text-center sm:text-left gap-2 sm:gap-0">
+                        <p><span class="font-bold text-gray-700">主辦單位：</span>大林慈濟醫院教學部</p>
+                        <p><span class="font-bold text-gray-700">聯絡人：</span>吳秉南 (分機33455)</p>
+                    </div>
+                    <div class="text-center md:text-right bg-yellow-50 text-yellow-700 px-4 py-2 rounded-lg border border-yellow-100 flex items-center justify-center">
+                        <i data-lucide="shield-check" class="w-4 h-4 mr-2"></i>
+                        備註：本報名資料僅供本次工作坊聯繫與餐點統計使用。
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </main>
+
+    <!-- 成功提示 Modal (預設隱藏) -->
+    <div id="successModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div class="bg-white rounded-3xl p-8 max-w-sm w-full mx-4 transform scale-95 transition-transform duration-300 shadow-2xl text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-green-400 to-emerald-500"></div>
+            <div class="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-6 mt-4">
+                <i data-lucide="check-circle-2" class="w-12 h-12 text-green-500"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">報名成功！</h3>
+            <p class="text-gray-600 mb-8">感謝您的填寫，我們期待在工作坊與您相見。</p>
+            <button onclick="closeModal()" class="w-full bg-gray-900 text-white font-bold py-3 px-6 rounded-xl hover:bg-gray-800 transition shadow-md">
+                關閉視窗
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 初始化 Lucide Icons
+        lucide.createIcons();
+
+        // 🔥 更新為您提供的 Google Apps Script 網頁應用程式網址
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyD5_UqP2HyKix7It07e6_WE1uX3P0IgoyCjfzCdX2D4mGt1K64ZZ0aIIvOwincKuk/exec'; 
+
+        // 處理「其他職稱」的輸入框啟閉
+        function toggleOtherJob(isOther) {
+            const input = document.getElementById('job_other_input');
+            input.disabled = !isOther;
+            if (isOther) {
+                input.focus();
+                input.required = true;
+            } else {
+                input.value = '';
+                input.required = false;
+            }
+        }
+
+        // 處理第7題：若勾選「完全沒用過」，取消其他勾選
+        function toggleNoneCheckbox(noneCheckbox) {
+            const checkboxes = document.querySelectorAll('input[name="ai_tools"]');
+            if (noneCheckbox.checked) {
+                checkboxes.forEach(cb => {
+                    if (cb !== noneCheckbox) cb.checked = false;
+                });
+            }
+        }
+        
+        // 監聽第7題：若勾選其他選項，取消「完全沒用過」
+        document.querySelectorAll('input[name="ai_tools"]').forEach(cb => {
+            cb.addEventListener('change', function() {
+                if (this.value !== '完全沒用過' && this.checked) {
+                    document.querySelector('input[name="ai_tools"][value="完全沒用過"]').checked = false;
+                }
+            });
+        });
+
+        // 處理第9題：最多選擇兩項
+        const q9Checkboxes = document.querySelectorAll('.q9-checkbox');
+        const maxAllowed = 2;
+        
+        q9Checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const checkedCount = document.querySelectorAll('.q9-checkbox:checked').length;
+                
+                // 如果勾選數量到達上限
+                if (checkedCount >= maxAllowed) {
+                    q9Checkboxes.forEach(cb => {
+                        if (!cb.checked) {
+                            cb.disabled = true;
+                            cb.closest('label').classList.add('opacity-50', 'cursor-not-allowed');
+                        }
+                    });
+                } else {
+                    // 解除限制
+                    q9Checkboxes.forEach(cb => {
+                        cb.disabled = false;
+                        cb.closest('label').classList.remove('opacity-50', 'cursor-not-allowed');
+                    });
+                }
+            });
+        });
+
+        // 處理表單送出
+        function handleFormSubmit(event) {
+            event.preventDefault(); // 防止頁面重新載入
+            
+            // 如果還沒設定網址，先給予防呆提示
+            if (scriptURL === '請將您的_APP_SCRIPT_URL_貼在這裡') {
+                alert('系統提示：請開發者記得先在程式碼中貼上 Google Apps Script 網址喔！');
+                return;
+            }
+
+            const form = document.getElementById('registrationForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const submitBtnText = document.getElementById('submitBtnText');
+            
+            // 變更按鈕狀態為送出中
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+            const originalText = submitBtnText.innerText;
+            submitBtnText.innerText = '資料安全傳送中...';
+
+            // 收集表單資料
+            const formData = new FormData(form);
+            
+            // 處理「其他」職稱邏輯
+            let jobTitle = formData.get('job_title');
+            if (jobTitle === '其他') {
+                jobTitle = '其他：' + document.getElementById('job_other_input').value;
+            }
+
+            // 將複選題陣列合併為單一字串
+            const aiTools = formData.getAll('ai_tools').join('、');
+            const painPoints = formData.getAll('pain_points').join('、');
+
+            // 組合準備送出的資料結構
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                department: formData.get('department'),
+                jobTitle: jobTitle,
+                snacks: formData.get('snacks'),
+                aiFreq: formData.get('ai_freq'),
+                aiTools: aiTools,
+                confidence: formData.get('confidence'),
+                painPoints: painPoints,
+                notes: formData.get('notes')
+            };
+
+            // 使用 fetch 發送給 Apps Script (使用 text/plain 巧妙避開 CORS 限制)
+            fetch(scriptURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if(result.result === 'success') {
+                    // 顯示成功 Modal
+                    const modal = document.getElementById('successModal');
+                    modal.classList.remove('hidden');
+                    setTimeout(() => {
+                        modal.classList.remove('opacity-0');
+                        modal.querySelector('div').classList.remove('scale-95');
+                        modal.querySelector('div').classList.add('scale-100');
+                    }, 10);
+                    
+                    // 重置表單
+                    form.reset();
+                    toggleOtherJob(false);
+                    q9Checkboxes.forEach(cb => {
+                        cb.disabled = false;
+                        cb.closest('label').classList.remove('opacity-50', 'cursor-not-allowed');
+                    });
+                } else {
+                    alert('發生錯誤：' + result.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error!', error);
+                alert('網路錯誤，請檢查連線後再試一次！');
+            })
+            .finally(() => {
+                // 恢復按鈕狀態
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                submitBtnText.innerText = originalText;
+            });
+        }
+
+        // 關閉 Modal
+        function closeModal() {
+            const modal = document.getElementById('successModal');
+            modal.classList.add('opacity-0');
+            modal.querySelector('div').classList.remove('scale-100');
+            modal.querySelector('div').classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300); // 等待動畫完成
+        }
+    </script>
+</body>
+</html>
